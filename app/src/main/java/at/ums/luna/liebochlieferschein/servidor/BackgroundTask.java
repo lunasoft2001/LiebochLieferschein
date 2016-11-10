@@ -2,9 +2,7 @@ package at.ums.luna.liebochlieferschein.servidor;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,9 +18,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import at.ums.luna.liebochlieferschein.actividades.Preferencias;
 import at.ums.luna.liebochlieferschein.database.DBHelper;
-import at.ums.luna.liebochlieferschein.inicio.MainActivity;
 import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
 import at.ums.luna.liebochlieferschein.modelos.Clientes;
 
@@ -128,38 +124,7 @@ public class BackgroundTask {
         return arrayList;
     }
 
-    public int getUltimoAlbaran(String idTrabajador){
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                Defaults.SERVER_URL + "obtener_ultimo_id_cabecera.php?idTrabajador=" + idTrabajador,
-                (String) null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    ultimoAlbaran = response.getInt("Max(id)");
-                    
-                    Log.i("JJ", "ultimo 1 " +  String.valueOf(ultimoAlbaran));
-
-                }catch (JSONException e){
-                    e.printStackTrace();
-
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-
-            }
-        });
-        MySingleton.getInstance(context).addToRequestque(jsonObjectRequest);
-        Log.i("JJ", "ultimo 2 " +  String.valueOf(ultimoAlbaran));
-
-
-        return ultimoAlbaran;
-    }
 
 
     /**

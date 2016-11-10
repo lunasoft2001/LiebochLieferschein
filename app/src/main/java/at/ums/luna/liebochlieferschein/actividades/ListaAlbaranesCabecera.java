@@ -172,7 +172,7 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             //obtenemos el listado de Clientes desde el servidor
-            ultimoAlbaran = operacionesServidor.ultimaCabeceraAlbaran(context, idTrabajador);
+            //
             return null;
         }
 

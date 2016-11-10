@@ -20,11 +20,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
 import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.actividades.ListaAlbaranesCabecera;
 import at.ums.luna.liebochlieferschein.actividades.ListaClientes;
 import at.ums.luna.liebochlieferschein.actividades.Preferencias;
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
+import at.ums.luna.liebochlieferschein.servidor.Defaults;
+import at.ums.luna.liebochlieferschein.servidor.MySingleton;
 import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,17 +100,41 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mostrarPreferencias();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            //obtenemos el listado de Clientes desde el servidor
-            operacionesServidor.ultimaCabeceraAlbaran(MainActivity.this, idTrabajadorActual);
-            Log.i("JJ", "El valor de ultimo albaran en MainActivity es " + String.valueOf(ultimoAlbaran));
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                        Defaults.SERVER_URL + "obtener_ultimo_id_cabecera.php?idTrabajador=" + idTrabajadorActual,
+                        (String) null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            ultimoAlbaran = response.getInt("Max(id)");
+                            tvUltimoAlbaran.setText(String.valueOf(ultimoAlbaran));
 
 
+                            Log.i("JJ", "ultimo 1 " +  ultimoAlbaran);
 
+                        }catch (JSONException e){
+                            e.printStackTrace();
+
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                        error.printStackTrace();
+
+                    }
+                });
+
+                MySingleton.getInstance(MainActivity.this).addToRequestque(jsonObjectRequest);
+                Log.i("JJ", "ultimo 2 " +  String.valueOf(ultimoAlbaran));
 
             return null;
         }

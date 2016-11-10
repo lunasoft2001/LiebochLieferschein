@@ -48,13 +48,4 @@ public class OperacionesServidor {
         return listaAlbaranes;
     }
 
-    public int ultimaCabeceraAlbaran(Context context, String idTrabajador){
-        BackgroundTask backgroundTask = new BackgroundTask(context);
-        int ultimoAlbaran = backgroundTask.getUltimoAlbaran(idTrabajador);
-
-        return ultimoAlbaran;
-    }
-
-
-
 }
