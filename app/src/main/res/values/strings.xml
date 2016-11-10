@@ -1,0 +1,90 @@
+<resources>
+
+    <string name="external_dir">UMSlieferschein</string>
+
+
+    <string name="app_name">Albaranes UMS</string>
+    <string name="textoUltimoAlbaran">Último albarán:</string>
+    <string name="botonClientes">Lista Clientes</string>
+    <string name="actualizar">Actualizar</string>
+    <string name="nombre_trabajador">Nombre Trabajador</string>
+    <string name="id_trabajador">ID Trabajador</string>
+    <string name="registro_del_trabajador">REGISTRO DEL TRABAJADOR</string>
+    <string name="datos_trabajador">Datos Trabajador</string>
+    <string name="albaranes">Albaranes</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fecha">fecha</string>
+    <string name="id_cliente">Id Cliente</string>
+    <string name="nombre_cliente">Nombre Cliente</string>
+    <string name="direccion_cliente">Direccion Cliente</string>
+    <string name="CONTENIDOS">CONTENIDOS</string>
+    <string name="IMAGEN">IMAGEN</string>
+    <string name="FIRMA">FIRMA</string>
+    <string name="borrar">Borrar</string>
+    <string name="Cancelar">Cancelar</string>
+    <string name="elija_un_cliente">Elija un cliente</string>
+    <string name="ContinuarBorrando">¿Desea continuar con la eliminación del elemento actual?</string>
+    <string name="Advertencia">Advertencia</string>
+    <string name="continuar">Continuar</string>
+    <string name="firma_guardada">Firma guardada</string>
+    <string name="foto_guardada">Foto capture successful!</string>
+    <string name="error_guardar_foto">Foto capture error!</string>
+    <string name="albaran_cerrado">ALBARAN CERRADO</string>
+    <string name="albaran_eliminado">El albaran %S ha sido eliminado</string>
+    <string name="seleccione_cliente">Seleccione un cliente</string>
+    <string name="DETALLE">DETALLE</string>
+    <string name="nueva_linea">Nueva Linea</string>
+    <string name="linea">linea</string>
+    <string name="descripcion">detalle</string>
+    <string name="cantidad">cantidad</string>
+    <string name="tipo">tipo</string>
+    <string name="numero_de_lineas">numero de lineas</string>
+    <string name="detalle_de_albaran">detalle de Albaran</string>
+    <string name="lista_albaranes">Lista de Albaranes</string>
+    <string name="detalle_eliminado">La linea %S ha sido borrada</string>
+    <string name="lista_clientes">lista de clientes</string>
+    <string name="cliente_a_buscar">Cliente a buscar</string>
+    <string name="click_aqui_para_buscar_un_cliente">Click aqui para buscar un cliente</string>
+    <string name="nuevo_albaran">Nuevo Albaran</string>
+    <string name="nueva_temporada">Nueva temporada</string>
+    <string name="mensaje_nueva_temporada_pasword">Se va a crear un nuevo albaran con la numeracion que usted elija. Introduzca password para continuar:</string>
+    <string name="mensaje_nueva_temporada_codigo">Introduzca el codigo de Albaran -6 digitos-:</string>
+    <string name="pass_false">La contraseña es incorrecta</string>
+    <string name="Trabajador">"Trabajador:%s "</string>
+
+
+    <string name="invoice_number">"Lieferscheinnummer: "</string>
+    <string name="invoice_date">"Datum: "</string>
+    <string name="company">"U.M.S. Dienstleistungs &amp; HandelsGmbH "</string>
+    <string name="company_adresse_1">"Industriestraße West 10"</string>
+    <string name="company_adresse_2">"8501 Lieboch"</string>
+    <string name="company_adresse_3">"Tel: +43 (0) 31 42/22 9 44"</string>
+    <string name="company_adresse_4">"office@ums-service.at"</string>
+    <string name="client_title">"Kunde:"</string>
+    <string name="client_name">""</string>
+    <string name="detail_code">""</string>
+    <string name="detail_description">"Detail "</string>
+    <string name="detail_amount">"Menge "</string>
+    <string name="detail_price">"E.H. "</string>
+    <string name="detail_total">""</string>
+    <string name="pdf_creado">PDF file created successfully</string>
+    <string name="GUARDAR">GUARDAR</string>
+    <string name="BUSQUEDA">BUSQUEDA</string>
+    <string name="recogida">recogida</string>
+    <string name="entrega">entrega</string>
+    <string name="sieben">sieben</string>
+    <string name="schredden">schredden</string>
+    <string name="umsetzen">umsetzen</string>
+    <string name="anderes">anderes</string>
+    <string name="summary_prefijo">2 digitos que se mostraran al principio de cada albaran</string>
+    <string name="summary_nombre">Nombre con el que se identificará al trabajador</string>
+    <string name="usuario">Usuario</string>
+    <string name="summary_dato_administrador">dato proporcionado por el administrador del programa</string>
+    <string name="password">Password</string>
+    <string name="usuario_registrado">USUARIO RESGISTRADO</string>
+    <string name="espere">Espere por favor...</string>
+    <string name="pushSenden">Mensajes</string>
+
+
+</resources>

@@ -1,0 +1,45 @@
+<manifest package="at.ums.luna.liebochlieferschein"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".inicio.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".inicio.MainActivity">
+        </activity>
+        <activity
+            android:name=".actividades.ListaClientes"
+            android:label="@string/lista_clientes">
+        </activity>
+        <activity
+            android:name=".actividades.ListaAlbaranesCabecera"
+            android:label="@string/lista_albaranes">
+        </activity>
+        <activity android:name=".actividades.FormularioAlbaranesCabecera">
+        </activity>
+        <activity android:name=".actividades.capturarFirma">
+        </activity>
+        <activity
+            android:name=".actividades.FormularioAlbaranesDetalle"
+            android:label="@string/detalle_de_albaran">
+        </activity>
+        <activity android:name=".actividades.Preferencias">
+        </activity>
+    </application>
+
+
+</manifest>

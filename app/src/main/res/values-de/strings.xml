@@ -1,0 +1,71 @@
+<resources>
+
+    <string name="app_name">Lieferschein UMS</string>
+    <string name="textoUltimoAlbaran">Letzte Lieferschein:</string>
+    <string name="botonClientes">Kunden aktualisieren</string>
+    <string name="fecha">Datum</string>
+    <string name="actualizar">Aktualisieren</string>
+    <string name="nombre_trabajador">Name Mitarbeiter </string>
+    <string name="id_trabajador">ID Mitarbeiter</string>
+    <string name="registro_del_trabajador">MITARBEITER ANMELDUNG</string>
+    <string name="datos_trabajador">Mitarbeiter Info</string>
+    <string name="albaranes">Lieferschein</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="id_cliente">Id Kunde</string>
+    <string name="nombre_cliente">Kunde Name</string>
+    <string name="direccion_cliente">Kunde Adresse</string>
+    <string name="CONTENIDOS">DATEN</string>
+    <string name="IMAGEN">PHOTO</string>
+    <string name="FIRMA">UNTERSCHRIFT</string>
+    <string name="borrar">LÖSCHEN</string>
+    <string name="Cancelar">ZURÜCK</string>
+    <string name="elija_un_cliente">Suchen Sie einen Kunden</string>
+    <string name="ContinuarBorrando">¿Wollen Sie das aktuelle Element löschen?</string>
+    <string name="Advertencia">Achtung</string>
+    <string name="continuar">Weiter</string>
+    <string name="firma_guardada">Unterschrift gespeichert</string>
+    <string name="foto_guardada">Photo gespeichert!</string>
+    <string name="error_guardar_foto">Photo error!</string>
+    <string name="albaran_cerrado">Lieferschein geschlossen</string>
+    <string name="albaran_eliminado">Der Lieferschein %S ist gelöscht</string>
+    <string name="seleccione_cliente">Markieren Sie einen Kunden</string>
+    <string name="DETALLE">DETAIL</string>
+    <string name="nueva_linea">Neue Position</string>
+    <string name="linea">Position</string>
+    <string name="descripcion">Detail</string>
+    <string name="cantidad">Menge</string>
+    <string name="tipo">E.H.</string>
+    <string name="numero_de_lineas">Anzahl von Positionen</string>
+    <string name="detalle_de_albaran">Liefereschein Detail</string>
+    <string name="lista_albaranes">Lieferschein Liste</string>
+    <string name="detalle_eliminado">Die Position %S ist gelöscht</string>
+    <string name="lista_clientes">Kunden Liste</string>
+    <string name="cliente_a_buscar">Kundensuche</string>
+    <string name="click_aqui_para_buscar_un_cliente">Click für Kundensuche</string>
+    <string name="nuevo_albaran">Neuer Lieferschein</string>
+    <string name="nueva_temporada">Neue Saison</string>
+    <string name="mensaje_nueva_temporada_pasword">Es wird ein neuer Lieferschain mit neuer Nummer gemacht. Bitte Passwort eintragen:</string>
+    <string name="mensaje_nueva_temporada_codigo">Schreiben Sie die neue Lieferscheinnummer -6 stellig-:</string>
+    <string name="pass_false">Das Passowrt ist falsch</string>
+    <string name="Trabajador">"Mitarbeiter: %s "</string>
+    <string name="pdf_creado">PDF ist in Ordnung</string>
+    <string name="GUARDAR">SPEICHERN</string>
+    <string name="BUSQUEDA">SUCHE</string>
+    <string name="recogida">Abholung</string>
+    <string name="entrega">Zustellung</string>
+    <string name="sieben">sieben</string>
+    <string name="schredden">schredden</string>
+    <string name="umsetzen">umsetzen</string>
+    <string name="anderes">anderes</string>
+    <string name="summary_prefijo">2 Stellig am anfang des Angebotes</string>
+    <string name="summary_nombre">Nombre con el que se identificará al trabajador</string>
+    <string name="usuario">User</string>
+    <string name="summary_dato_administrador">dato proporcionado por el administrador del programa</string>
+    <string name="password">Passwort</string>
+    <string name="usuario_registrado">Benutzer angemeldet </string>
+    <string name="espere">Bitte warten...</string>
+    <string name="pushSenden">Nachrichten</string>
+
+</resources>
+

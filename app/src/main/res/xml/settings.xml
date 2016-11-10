@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Valores para prefijo de trabajador, nombre, usuario y contraseña -->
+    <EditTextPreference
+        android:key="prefijo"
+        android:title="@string/id_trabajador"
+        android:summary="@string/summary_prefijo"
+        android:selectAllOnFocus="true"
+        android:maxLength="2"
+        android:textAllCaps="true"
+        android:singleLine="true"
+        android:defaultValue="@string/def_prefijo"/>
+
+    <EditTextPreference
+        android:key="nombre"
+        android:title="@string/nombre_trabajador"
+        android:summary="@string/summary_nombre"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:defaultValue="@string/def_nombre"/>
+
+    <EditTextPreference
+        android:key="usuario"
+        android:title="@string/usuario"
+        android:summary="@string/summary_dato_administrador"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:defaultValue="@string/def_usuario"/>
+
+    <EditTextPreference
+        android:key="password"
+        android:title="@string/password"
+        android:summary="@string/summary_dato_administrador"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:defaultValue="@string/def_pass"/>
+
+
+
+</PreferenceScreen>

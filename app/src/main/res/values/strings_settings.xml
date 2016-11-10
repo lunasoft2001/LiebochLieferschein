@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Preferencias de settings-->
+    <string name="def_prefijo">ßß</string>
+    <string name="def_nombre">Develop</string>
+    <string name="def_usuario">luna</string>
+    <string name="def_pass">1234</string>
+
+</resources>

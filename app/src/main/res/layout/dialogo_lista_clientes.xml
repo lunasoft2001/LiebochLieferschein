@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:elevation="8dp"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:background="@drawable/borde_imagen_accent"
+        android:id="@+id/barraBusqueda">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/BUSQUEDA"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:accessibilityLiveRegion="assertive"/>
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etBusqueda"
+            android:hint="@string/click_aqui_para_buscar_un_cliente"
+            android:layout_below="@+id/barraBusqueda"
+            android:layout_centerHorizontal="true"/>
+
+    </LinearLayout>
+
+
+
+
+    <ListView
+        android:id="@+id/lista1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:dividerHeight="1dp"
+        android:elevation="4dp"/>
+
+</LinearLayout>

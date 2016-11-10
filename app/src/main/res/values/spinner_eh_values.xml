@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="eh_array">
+        <item>Beh.</item>
+        <item>Bigbag</item>
+        <item>Cont.</item>
+        <item>Fuhre</item>
+        <item>Kg.</item>
+        <item>Liter</item>
+        <item>m³</item>
+        <item>Pau.</item>
+        <item>Rollen</item>
+        <item>Sack</item>
+        <item>Std.</item>
+        <item>Stk.</item>
+        <item>To.</item>
+        <item>Zug</item>
+
+    </string-array>
+</resources>
