@@ -92,63 +92,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //rellenamos ultimoAlbaran
-        new UltimoAlbaranAsync().execute();
+        obtenerUltimoAlbaran();    }
+
+    private void obtenerUltimoAlbaran(){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "obtener_ultimo_id_cabecera.php?idTrabajador=" + idTrabajadorActual,
+                (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                try {
+                    ultimoAlbaran = response.getInt("Max(id)");
+                    tvUltimoAlbaran.setText(String.valueOf(ultimoAlbaran));
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+
+            }
+        });
+
+        MySingleton.getInstance(MainActivity.this).addToRequestque(jsonObjectRequest);
     }
-
-    private class UltimoAlbaranAsync extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                        Defaults.SERVER_URL + "obtener_ultimo_id_cabecera.php?idTrabajador=" + idTrabajadorActual,
-                        (String) null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        try {
-                            ultimoAlbaran = response.getInt("Max(id)");
-                            tvUltimoAlbaran.setText(String.valueOf(ultimoAlbaran));
-
-
-                            Log.i("JJ", "ultimo 1 " +  ultimoAlbaran);
-
-                        }catch (JSONException e){
-                            e.printStackTrace();
-
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(MainActivity.this, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
-                        error.printStackTrace();
-
-                    }
-                });
-
-                MySingleton.getInstance(MainActivity.this).addToRequestque(jsonObjectRequest);
-                Log.i("JJ", "ultimo 2 " +  String.valueOf(ultimoAlbaran));
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            Log.i("JJ", "El valor de ultimo albaran en MainActivity es " + String.valueOf(ultimoAlbaran));
-            tvUltimoAlbaran.setText(String.valueOf(ultimoAlbaran));
-
-        }
-    }
-
 
     private void solicitarPermisos() {
         if (ContextCompat.checkSelfPermission(this,
@@ -241,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         etIdAlbaran.setHint("codigo");
-        builder.setMessage(getString(R.string.mensaje_nueva_temporada_pasword))
+        builder.setMessage(getString(R.string.mensaje_nueva_temporada_codigo))
                 .setTitle(this.getString(R.string.nueva_temporada))
                 .setCancelable(false)
                 .setView(etIdAlbaran)
@@ -257,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 int nuevoNumAlbaran = Integer.parseInt(etIdAlbaran.getText().toString());
                                 nuevoNumAlbaran--;
+                                operacionesServidor.nuevaCabeceraAlbaran(MainActivity.this,nuevoNumAlbaran,idTrabajadorActual);
                                 //mOperacionesBaseDatos.nuevaCabeceraAlbaran(nuevoNumAlbaran,idTrabajadorActual);
 
                                 botonListaAlbaranes(null);

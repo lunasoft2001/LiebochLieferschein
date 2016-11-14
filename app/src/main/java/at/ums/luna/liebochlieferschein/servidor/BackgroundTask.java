@@ -6,17 +6,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import at.ums.luna.liebochlieferschein.database.DBHelper;
 import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
@@ -122,6 +126,50 @@ public class BackgroundTask {
         MySingleton.getInstance(context).addToRequestque(jsonArrayRequest);
 
         return arrayList;
+    }
+
+    public void nuevaCabeceraAlbaran(final Context context, final String id,  final String idTrabajador, final String codigoAlbaran,
+                                     final String idCliente, final String fecha, final String recogida){
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "insertar_cabecera_albaran.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(context, response, Toast.LENGTH_LONG).show();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+                error.printStackTrace();
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String,String> params = new HashMap<String, String>();
+//                params.put("id",id);
+//                params.put("idTrabajador",idTrabajador);
+//                params.put("codigoAlbaran",codigoAlbaran);
+//                params.put("idCliente",idCliente);
+//                params.put("fecha",fecha);
+//                params.put("recogida",recogida);
+
+                params.put("id","170001");
+                params.put("idTrabajador","JJ");
+                params.put("codigoAlbaran","JJ170001");
+                params.put("idCliente","1");
+                params.put("fecha","14.11.16");
+                params.put("recogida","abholung");
+
+                return params;
+            }
+        };
+        MySingleton.getInstance(context).addToRequestque(stringRequest);
+
     }
 
 

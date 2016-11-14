@@ -11,8 +11,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -20,7 +30,10 @@ import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.adaptadores.ListaAlbaranesCabeceraAdapter;
 import at.ums.luna.liebochlieferschein.adaptadores.RecyclerItemClickListener;
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
+import at.ums.luna.liebochlieferschein.inicio.MainActivity;
 import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
+import at.ums.luna.liebochlieferschein.servidor.Defaults;
+import at.ums.luna.liebochlieferschein.servidor.MySingleton;
 import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 public class ListaAlbaranesCabecera extends AppCompatActivity {
@@ -84,14 +97,14 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
 
                 }else {
 
-                    mOperacionesBaseDatos.nuevaCabeceraAlbaran(ultimoAlbaran, idTrabajador);
+                    operacionesServidor.nuevaCabeceraAlbaran(context,ultimoAlbaran,idTrabajador);
 
                     int nuevoAlbaran = ultimoAlbaran + 1;
                     String nuevoCodigoAlbaran = idTrabajador + String.valueOf(nuevoAlbaran);
 
-                    Intent intento = new Intent(ListaAlbaranesCabecera.this, FormularioAlbaranesCabecera.class);
-                    intento.putExtra("codigoAlbaran", nuevoCodigoAlbaran);
-                    startActivity(intento);
+//                    Intent intento = new Intent(ListaAlbaranesCabecera.this, FormularioAlbaranesCabecera.class);
+//                    intento.putExtra("codigoAlbaran", nuevoCodigoAlbaran);
+//                    startActivity(intento);
                 }
             }
         });
@@ -167,25 +180,31 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
         }
     }
 
-    private class UltimoAlbaranAsync extends AsyncTask<Void, Void, Void> {
+    private void obtenerUltimoAlbaran(){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "obtener_ultimo_id_cabecera.php?idTrabajador=" + idTrabajador,
+                (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            //obtenemos el listado de Clientes desde el servidor
-            //
-            return null;
-        }
+                try {
+                    ultimoAlbaran = response.getInt("Max(id)");
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+                }catch (JSONException e){
+                    e.printStackTrace();
 
-        /*
-        Crear un nuevo adaptador
-         */
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(ListaAlbaranesCabecera.this, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
 
-            mCabeceraAlbaranes = operacionesServidor.verListaAlbaranesCabeceraCompleta(context);
-        }
+            }
+        });
+
+        MySingleton.getInstance(ListaAlbaranesCabecera.this).addToRequestque(jsonObjectRequest);
     }
 
 
@@ -194,10 +213,7 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        new UltimoAlbaranAsync().execute();
-
-
-
+       obtenerUltimoAlbaran();
 
     }
 
@@ -225,20 +241,13 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
 
                                 int nuevoNumAlbaran = Integer.parseInt(etIdAlbaran.getText().toString());
                                 nuevoNumAlbaran--;
-                                mOperacionesBaseDatos.nuevaCabeceraAlbaran(nuevoNumAlbaran,idTrabajador);
+                                operacionesServidor.nuevaCabeceraAlbaran(context,nuevoNumAlbaran,idTrabajador);
 
                                 int nuevoAlbaran = nuevoNumAlbaran + 1;
                                 String nuevoCodigoAlbaran = idTrabajador + String.valueOf(nuevoAlbaran);
                                 Intent intento = new Intent(ListaAlbaranesCabecera.this, FormularioAlbaranesCabecera.class);
                                 intento.putExtra("codigoAlbaran", nuevoCodigoAlbaran);
                                 startActivity(intento);
-
-
-
-
-
-
-
 
                             }
                         });
