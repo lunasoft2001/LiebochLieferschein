@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,17 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,8 +44,12 @@ import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.adaptadores.DialogoListaCampoClientes;
 import at.ums.luna.liebochlieferschein.database.DBHelper;
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
+import at.ums.luna.liebochlieferschein.inicio.MainActivity;
 import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
 import at.ums.luna.liebochlieferschein.modelos.Clientes;
+import at.ums.luna.liebochlieferschein.servidor.Defaults;
+import at.ums.luna.liebochlieferschein.servidor.MySingleton;
+import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 
 /**
@@ -44,6 +60,7 @@ public class AlbaranesCabeceraFragment extends Fragment {
     private String codigoAlbaranObtenido;
 
     private OperacionesBaseDatos mOperacionesBaseDatos;
+    private OperacionesServidor operacionesServidor;
     private Context esteContexto;
 
     TextView fecha;
@@ -161,7 +178,6 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
     private void refrescarDatos() {
         mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
-        CabeceraAlbaranes albaranActual = mOperacionesBaseDatos.obtenerCabeceraAlbaran(codigoAlbaranObtenido);
 
         fecha = (TextView)getView().findViewById(R.id.tvFecha);
         idCliente = (TextView)getView().findViewById(R.id.tvIdCliente);
@@ -170,34 +186,58 @@ public class AlbaranesCabeceraFragment extends Fragment {
         recogida1 = (RadioGroup) getView().findViewById(R.id.radioGrupoRecogida1);
         recogida2 = (RadioGroup) getView().findViewById(R.id.radioGrupoRecogida2);
 
+        //Obtiene los datos del servidor
 
-        fecha.setText(albaranActual.getFecha().toString());
-        idCliente.setText(String.valueOf(albaranActual.getIdCliente()));
-        nombreCliente.setText(albaranActual.getNombreCliente());
-        direccionCliente.setText(albaranActual.getDireccionCliente());
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "obtener_cabecera_albaran_por_id.php?codigoAlbaran=" + codigoAlbaranObtenido,
+                (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
 
-        esRecogida = albaranActual.getRecogida();
+                try {
+                    fecha.setText(String.valueOf(response.getString("fecha")));
+                    idCliente.setText(String.valueOf(response.getInt("idCliente")));
+                    nombreCliente.setText(response.getString("nombre"));
+                    direccionCliente.setText(response.getString("direccion"));
+                    esRecogida = response.getString("recogida");
 
-        switch (esRecogida){
-            case "zustellung":
-                recogida1.check(R.id.radioButtonEntrega);
-                break;
-            case "abholung":
-                recogida1.check(R.id.radioButtonRecogida);
-                break;
-            case "anderes":
-                recogida1.check(R.id.radioButtonAnderes);
-                break;
-            case "sieben":
-                recogida2.check(R.id.radioButtonSieben);
-                break;
-            case "schredden":
-                recogida2.check(R.id.radioButtonSchredden);
-                break;
-            case "umsetzen":
-                recogida2.check(R.id.radioButtonUmsetzen);
-                break;
-        }
+                    switch (esRecogida){
+                        case "zustellung":
+                            recogida1.check(R.id.radioButtonEntrega);
+                            break;
+                        case "abholung":
+                            recogida1.check(R.id.radioButtonRecogida);
+                            break;
+                        case "anderes":
+                            recogida1.check(R.id.radioButtonAnderes);
+                            break;
+                        case "sieben":
+                            recogida2.check(R.id.radioButtonSieben);
+                            break;
+                        case "schredden":
+                            recogida2.check(R.id.radioButtonSchredden);
+                            break;
+                        case "umsetzen":
+                            recogida2.check(R.id.radioButtonUmsetzen);
+                            break;
+                    }
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("JJ", error.toString());
+                Toast.makeText(esteContexto, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+
+            }
+        });
+
+        MySingleton.getInstance(esteContexto).addToRequestque(jsonObjectRequest);
 
     }
 
@@ -274,8 +314,6 @@ public class AlbaranesCabeceraFragment extends Fragment {
         int idClienteActual= Integer.parseInt(idCliente.getText().toString());
 
         RadioButton rbRecogida = (RadioButton) getView().findViewById(R.id.radioButtonRecogida);
-
-
 
         mOperacionesBaseDatos.actualizarCabeceraAlbaran(idAlbaranActual,fechaActual,idClienteActual, esRecogida);
 

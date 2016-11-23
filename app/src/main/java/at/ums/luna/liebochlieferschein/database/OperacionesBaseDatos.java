@@ -19,6 +19,7 @@ import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
 import at.ums.luna.liebochlieferschein.modelos.Clientes;
 import at.ums.luna.liebochlieferschein.modelos.DetalleAlbaranes;
 import at.ums.luna.liebochlieferschein.servidor.BackgroundTask;
+import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 
 /**
@@ -147,8 +148,8 @@ public class OperacionesBaseDatos {
 
 
     public List<Clientes> verListaClientesServidor(Context context){
-        BackgroundTask backgroundTask = new BackgroundTask(context);
-        List<Clientes> listaClientes = backgroundTask.getListaClientes();
+        OperacionesServidor operacionesServidor = new OperacionesServidor();
+        List<Clientes> listaClientes = operacionesServidor.verListaClientesServidor(context);
 
         return listaClientes;
     }

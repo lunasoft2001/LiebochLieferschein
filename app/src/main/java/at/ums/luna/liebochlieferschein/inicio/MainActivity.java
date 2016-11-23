@@ -20,15 +20,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.actividades.ListaAlbaranesCabecera;
@@ -92,9 +102,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //rellenamos ultimoAlbaran
-        obtenerUltimoAlbaran();    }
+        obtenerUltimoAlbaran();
+
+
+    }
 
     private void obtenerUltimoAlbaran(){
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 Defaults.SERVER_URL + "obtener_ultimo_id_cabecera.php?idTrabajador=" + idTrabajadorActual,
                 (String) null, new Response.Listener<JSONObject>() {
@@ -231,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
                                 int nuevoNumAlbaran = Integer.parseInt(etIdAlbaran.getText().toString());
                                 nuevoNumAlbaran--;
                                 operacionesServidor.nuevaCabeceraAlbaran(MainActivity.this,nuevoNumAlbaran,idTrabajadorActual);
-                                //mOperacionesBaseDatos.nuevaCabeceraAlbaran(nuevoNumAlbaran,idTrabajadorActual);
 
                                 botonListaAlbaranes(null);
 

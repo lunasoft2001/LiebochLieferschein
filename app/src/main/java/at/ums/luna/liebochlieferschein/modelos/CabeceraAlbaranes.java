@@ -22,9 +22,9 @@ public class CabeceraAlbaranes {
     private String emailCliente;
     private String telefonoCliente;
 
-    public CabeceraAlbaranes(int id, String fecha, int idCliente, String idTrabajador,
-                             String codigoAlbaran, String recogida, String nombreCliente,
-                             String direccionCliente, String emailCliente, String telefonoCliente){
+    public CabeceraAlbaranes(int id, String codigoAlbaran, String fecha, int idCliente,
+                             String nombreTrabajador, String idTrabajador, String recogida,
+                             String direccionCliente, String telefonoCliente, String emailCliente){
         this.id = id;
         this.fecha = fecha;
         this.idCliente = idCliente;

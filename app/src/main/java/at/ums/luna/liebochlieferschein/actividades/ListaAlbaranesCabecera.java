@@ -102,9 +102,9 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
                     int nuevoAlbaran = ultimoAlbaran + 1;
                     String nuevoCodigoAlbaran = idTrabajador + String.valueOf(nuevoAlbaran);
 
-//                    Intent intento = new Intent(ListaAlbaranesCabecera.this, FormularioAlbaranesCabecera.class);
-//                    intento.putExtra("codigoAlbaran", nuevoCodigoAlbaran);
-//                    startActivity(intento);
+                    Intent intento = new Intent(ListaAlbaranesCabecera.this, FormularioAlbaranesCabecera.class);
+                    intento.putExtra("codigoAlbaran", nuevoCodigoAlbaran);
+                    startActivity(intento);
                 }
             }
         });

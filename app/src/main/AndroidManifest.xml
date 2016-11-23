@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest package="at.ums.luna.liebochlieferschein"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -39,7 +40,8 @@
         </activity>
         <activity android:name=".actividades.Preferencias">
         </activity>
+        <activity android:name=".actividades.ListadoClientes">
+        </activity>
     </application>
-
 
 </manifest>

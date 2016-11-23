@@ -2,6 +2,7 @@ package at.ums.luna.liebochlieferschein.servidor;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
@@ -40,52 +41,14 @@ public class BackgroundTask {
         this.context = context;
     }
 
-    public ArrayList<Clientes> getListaClientes(){
+    public ArrayList<CabeceraAlbaranes> obtenerCabeceraAlbaran(String codigoAlbaran){
 
-        final ArrayList<Clientes> arrayList = new ArrayList<>();
-        JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(Request.Method.POST, Defaults.SERVER_URL + "obtener_clientes.php", (String) null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        int count = 0;
-                        while (count < response.length()){
-                            try {
-                                JSONObject jsonObject = response.getJSONObject(count);
-                                Clientes cliente = new Clientes(jsonObject.getInt("idCliente"),
-                                        jsonObject.getString("nombre"),
-                                        jsonObject.getString("direccion"),
-                                        jsonObject.getString("telefono"),
-                                        jsonObject.getString("email"));
-                                arrayList.add(cliente);
-
-                                count++;
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(context,"Error....", Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-
-            }
-        });
-
-        MySingleton.getInstance(context).addToRequestque(jsonArrayRequest);
-
-        return arrayList;
-    }
-
-    public ArrayList<CabeceraAlbaranes> getListaAlbaranesCabecera(){
 
         final ArrayList<CabeceraAlbaranes> arrayList = new ArrayList<>();
 
-        JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(Request.Method.POST, Defaults.SERVER_URL + "obtener_cabecera_albaranes.php", (String) null,
+        JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "obtener_cabecera_albaran_por_id.php?codigoAlbaran=" + codigoAlbaran,
+                (String) null,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -94,15 +57,15 @@ public class BackgroundTask {
                             try {
                                 JSONObject jsonObject = response.getJSONObject(count);
                                 CabeceraAlbaranes cabecera = new CabeceraAlbaranes(jsonObject.getInt("id"),
+                                        jsonObject.getString("codigoAlbaran"),
                                         jsonObject.getString("fecha"),
                                         jsonObject.getInt("idCliente"),
-                                        jsonObject.getString("idTrabajador"),
-                                        jsonObject.getString("codigoAlbaran"),
-                                        jsonObject.getString("recogida"),
                                         jsonObject.getString("nombre"),
+                                        jsonObject.getString("idTrabajador"),
+                                        jsonObject.getString("recogida"),
                                         jsonObject.getString("direccion"),
-                                        jsonObject.getString("email"),
-                                        jsonObject.getString("telefono"));
+                                        jsonObject.getString("telefono"),
+                                        jsonObject.getString("email"));
                                 arrayList.add(cabecera);
 
                                 count++;
@@ -126,51 +89,9 @@ public class BackgroundTask {
         MySingleton.getInstance(context).addToRequestque(jsonArrayRequest);
 
         return arrayList;
-    }
-
-    public void nuevaCabeceraAlbaran(final Context context, final String id,  final String idTrabajador, final String codigoAlbaran,
-                                     final String idCliente, final String fecha, final String recogida){
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                Defaults.SERVER_URL + "insertar_cabecera_albaran.php",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Toast.makeText(context, response, Toast.LENGTH_LONG).show();
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
-                error.printStackTrace();
-
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                Map<String,String> params = new HashMap<String, String>();
-//                params.put("id",id);
-//                params.put("idTrabajador",idTrabajador);
-//                params.put("codigoAlbaran",codigoAlbaran);
-//                params.put("idCliente",idCliente);
-//                params.put("fecha",fecha);
-//                params.put("recogida",recogida);
-
-                params.put("id","170001");
-                params.put("idTrabajador","JJ");
-                params.put("codigoAlbaran","JJ170001");
-                params.put("idCliente","1");
-                params.put("fecha","14.11.16");
-                params.put("recogida","abholung");
-
-                return params;
-            }
-        };
-        MySingleton.getInstance(context).addToRequestque(stringRequest);
 
     }
+
 
 
 
