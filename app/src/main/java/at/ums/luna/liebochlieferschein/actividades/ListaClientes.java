@@ -40,7 +40,7 @@ public class ListaClientes extends AppCompatActivity {
     private RecyclerView.LayoutManager lManager;
 
     OperacionesServidor operacionesServidor;
-    private List<Clientes> mClientes;
+    private ArrayList<Clientes> mClientes;
     Context context;
 
 
@@ -55,6 +55,7 @@ public class ListaClientes extends AppCompatActivity {
          */
 
         operacionesServidor = new OperacionesServidor();
+        mClientes = new ArrayList<>();
 
         // Llamamos la taraea Async
         new ListClientAsync().execute();
@@ -95,53 +96,61 @@ public class ListaClientes extends AppCompatActivity {
 
     private class ListClientAsync extends AsyncTask<Void, Void, Void> {
 
+
+        int acabado = 0;
+
         @Override
         protected Void doInBackground(Void... params) {
             //obtenemos el listado de Clientes desde el servidor
-            mClientes = operacionesServidor.verListaClientesServidor1(context);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                    Defaults.SERVER_URL + "obtener_clientes_1.php", (String) null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
 
-//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-//                    Defaults.SERVER_URL + "obtener_clientes_1.php", (String) null,
-//                    new Response.Listener<JSONObject>() {
-//                        @Override
-//                        public void onResponse(JSONObject response) {
-//
-//                            try {
-//                                int count = 0;
-//                                int total = response.getInt("total");
-//                                Log.i("JJ","Hay " + total + " registros");
-//
-//                                JSONArray jsonArray = response.getJSONArray("clientes");
-//                                while (count < total) {
-//                                    JSONObject clientesObtenidos = jsonArray.getJSONObject(count);
-//
-//                                    Clientes cliente = new Clientes(clientesObtenidos.getInt("idCliente"),
-//                                            clientesObtenidos.getString("nombre"),
-//                                            clientesObtenidos.getString("direccion"),
-//                                            clientesObtenidos.getString("telefono"),
-//                                            clientesObtenidos.getString("email"));
-//                                    mClientes.add(cliente);
-//                                    Log.i("JJ", String.valueOf(clientesObtenidos.getInt("idCliente")));
-//
-//                                    count++;
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                                Log.i("JJ",e.toString());
-//                            }
-//
-//                        }
-//                    }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//
-//                }
-//            });
-//
-//            MySingleton.getInstance(context).addToRequestque(jsonObjectRequest);
-//            Log.i("JJ", "total " + String.valueOf(mClientes.size()));
+                            try {
+                                int count = 0;
+                                int total = response.getInt("total");
 
+                                JSONArray jsonArray = response.getJSONArray("clientes");
 
+                                while (count < total) {
+                                    JSONObject clientesObtenidos = jsonArray.getJSONObject(count);
+
+                                    Clientes cliente = new Clientes(clientesObtenidos.getInt("idCliente"),
+                                            clientesObtenidos.getString("nombre"),
+                                            clientesObtenidos.getString("direccion"),
+                                            clientesObtenidos.getString("telefono"),
+                                            clientesObtenidos.getString("email"));
+                                    mClientes.add(cliente);
+
+                                    count++;
+                                }
+
+                                if (count == total){acabado =1;}
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Log.i("JJ", "error  " + e.toString());
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+
+            MySingleton.getInstance(ListaClientes.this).addToRequestque(jsonObjectRequest);
+
+            int espera = 1;
+            while (acabado == 0){
+
+                espera++;
+            }
+
+            Log.i("JJ", String.valueOf(espera));
 
             return null;
         }

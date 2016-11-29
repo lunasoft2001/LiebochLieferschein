@@ -84,9 +84,11 @@ public class OperacionesServidor {
         return listaClientes;
     }
 
-    public List<Clientes> verListaClientesServidor1(final Context context){
+    public ArrayList<Clientes> verListaClientesServidor1(final Context context){
 
         final ArrayList<Clientes> listaClientes = new ArrayList<>();
+
+        final int[] acabado = {0};
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 Defaults.SERVER_URL + "obtener_clientes_1.php", (String) null,
@@ -113,10 +115,15 @@ public class OperacionesServidor {
 
                                 count++;
                             }
+
+                            if (listaClientes.size()==total){
+                                acabado[0] =1;}
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.i("JJ",e.toString());
                         }
+
+
 
                     }
                 }, new Response.ErrorListener() {
@@ -127,7 +134,10 @@ public class OperacionesServidor {
         });
 
         MySingleton.getInstance(context).addToRequestque(jsonObjectRequest);
-        Log.i("JJ", "total " + String.valueOf(listaClientes.size()));
+
+        while (acabado[0]==0) {
+            Log.i("JJ", "total " + String.valueOf(listaClientes.size()));
+        }
         return listaClientes;
     }
 
