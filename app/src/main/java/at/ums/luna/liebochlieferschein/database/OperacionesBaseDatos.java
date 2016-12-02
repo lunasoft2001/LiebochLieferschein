@@ -126,6 +126,7 @@ public class OperacionesBaseDatos {
         cursor.moveToFirst();
 
         int resultado = cursor.getInt(cursor.getColumnIndex(DBHelper.Clientes.ID));
+        
 
         cursor.close();
 
@@ -149,7 +150,7 @@ public class OperacionesBaseDatos {
 
     public List<Clientes> verListaClientesServidor(Context context){
         OperacionesServidor operacionesServidor = new OperacionesServidor();
-        List<Clientes> listaClientes = operacionesServidor.verListaClientesServidor(context);
+        List<Clientes> listaClientes = operacionesServidor.verListaClientesServidor1(context);
 
         return listaClientes;
     }

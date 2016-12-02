@@ -10,17 +10,18 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import at.ums.luna.liebochlieferschein.R;
+import at.ums.luna.liebochlieferschein.modelos.Clientes;
 
 /**
  * Created by luna-aleixos on 09.06.2016.
  */
 public class DialogoListaCampoClientes extends BaseAdapter{
 
-    private ArrayList<String> listData;
+    private ArrayList<Clientes> listData;
 
     private LayoutInflater layoutInflater;
 
-    public DialogoListaCampoClientes(Context context, ArrayList<String> listData) {
+    public DialogoListaCampoClientes(Context context, ArrayList<Clientes> listData) {
         this.listData = listData;
         layoutInflater = LayoutInflater.from(context);
     }
@@ -54,7 +55,8 @@ public class DialogoListaCampoClientes extends BaseAdapter{
         }
 
 
-        holder.campoResultante.setText(listData.get(position));
+        holder.campoResultante.setText(listData.get(position).getId() + " - " +
+                listData.get(position).getNombre());
 
         return convertView;
     }

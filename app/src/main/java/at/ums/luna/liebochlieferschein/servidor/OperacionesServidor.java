@@ -42,53 +42,52 @@ public class OperacionesServidor {
      * CLIENTES
      */
 
-    public List<Clientes> verListaClientesServidor(final Context context){
-
-        final ArrayList<Clientes> listaClientes = new ArrayList<>();
-
-        JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(Request.Method.POST, Defaults.SERVER_URL + "obtener_clientes.php", (String) null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        int count = 0;
-                        while (count < response.length()){
-                            try {
-                                JSONObject jsonObject = response.getJSONObject(count);
-                                Clientes cliente = new Clientes(jsonObject.getInt("idCliente"),
-                                        jsonObject.getString("nombre"),
-                                        jsonObject.getString("direccion"),
-                                        jsonObject.getString("telefono"),
-                                        jsonObject.getString("email"));
-                                listaClientes.add(cliente);
-
-                                count++;
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(context,"Error....", Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-
-            }
-        });
-
-        MySingleton.getInstance(context).addToRequestque(jsonArrayRequest);
-
-        return listaClientes;
-    }
+    // este metodo queda como modelo para llamadas con php sin objetos dentro de JSON
+//    public List<Clientes> verListaClientesServidor(final Context context){
+//
+//        final ArrayList<Clientes> listaClientes = new ArrayList<>();
+//
+//        JsonArrayRequest jsonArrayRequest =  new JsonArrayRequest(Request.Method.POST, Defaults.SERVER_URL + "obtener_clientes.php", (String) null,
+//                new Response.Listener<JSONArray>() {
+//                    @Override
+//                    public void onResponse(JSONArray response) {
+//                        int count = 0;
+//                        while (count < response.length()){
+//                            try {
+//                                JSONObject jsonObject = response.getJSONObject(count);
+//                                Clientes cliente = new Clientes(jsonObject.getInt("idCliente"),
+//                                        jsonObject.getString("nombre"),
+//                                        jsonObject.getString("direccion"),
+//                                        jsonObject.getString("telefono"),
+//                                        jsonObject.getString("email"));
+//                                listaClientes.add(cliente);
+//
+//                                count++;
+//
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//
+//                Toast.makeText(context,"Error....", Toast.LENGTH_SHORT).show();
+//                error.printStackTrace();
+//
+//            }
+//        });
+//
+//        MySingleton.getInstance(context).addToRequestque(jsonArrayRequest);
+//
+//        return listaClientes;
+//    }
 
     public ArrayList<Clientes> verListaClientesServidor1(final Context context){
 
         final ArrayList<Clientes> listaClientes = new ArrayList<>();
-
-        final int[] acabado = {0};
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 Defaults.SERVER_URL + "obtener_clientes_1.php", (String) null,
@@ -116,8 +115,6 @@ public class OperacionesServidor {
                                 count++;
                             }
 
-                            if (listaClientes.size()==total){
-                                acabado[0] =1;}
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Log.i("JJ",e.toString());
@@ -135,11 +132,25 @@ public class OperacionesServidor {
 
         MySingleton.getInstance(context).addToRequestque(jsonObjectRequest);
 
-        while (acabado[0]==0) {
-            Log.i("JJ", "total " + String.valueOf(listaClientes.size()));
-        }
         return listaClientes;
     }
+
+//    public ArrayList<String> datosCampoClientes(Context context){
+//
+//        verListaClientesServidor1(context);
+//
+//
+//
+//
+//        Cursor cursor = db.query(DBHelper.Tablas.CLIENTES,nombreColumna,null,null,null,null,null);
+//        cursor.moveToFirst();
+//        ArrayList<String> lista = new ArrayList<String>();
+//        do{
+//            lista.add(cursor.getString(0));
+//        }while (cursor.moveToNext());
+//
+//        return lista;
+//    }
 
 
     /**
@@ -267,6 +278,110 @@ public class OperacionesServidor {
                     jsonBody.put("idCliente","1");
                     jsonBody.put("fecha",obtenerFechaActual());
                     jsonBody.put("recogida","abholung");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                final String mRequestBody = jsonBody.toString();
+
+                try {
+                    return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                    return null;
+                }
+            }
+        };
+        MySingleton.getInstance(context).addToRequestque(stringRequest);
+
+    }
+
+    public void eliminarCabeceraAlbaran(final Context context,  final String codigoAlbaran){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "borrar_cabecera_albaran.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(context, "Lieferschein abgelöscht", Toast.LENGTH_LONG).show();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+                error.printStackTrace();
+
+            }
+        })
+        {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                JSONObject jsonBody = new JSONObject();
+
+                try {
+                    jsonBody.put("codigoAlbaran",codigoAlbaran);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                final String mRequestBody = jsonBody.toString();
+
+                try {
+                    return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                    return null;
+                }
+            }
+        };
+        MySingleton.getInstance(context).addToRequestque(stringRequest);
+
+    }
+
+    public void editarCabeceraAlbaran(final Context context, final String codigoAlbaran, final String fecha,
+                                      final String idCliente, final String recogida){
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "actualizar_cabecera_albaran.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(context, "Lieferschein updated", Toast.LENGTH_LONG).show();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+                error.printStackTrace();
+
+            }
+        })
+        {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                JSONObject jsonBody = new JSONObject();
+
+                try {
+                    jsonBody.put("codigoAlbaran",codigoAlbaran);
+                    jsonBody.put("fecha",fecha);
+                    jsonBody.put("idCliente",idCliente);
+                    jsonBody.put("recogida",recogida);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

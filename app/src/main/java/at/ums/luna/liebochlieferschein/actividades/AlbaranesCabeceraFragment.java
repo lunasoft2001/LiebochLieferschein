@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -28,10 +29,9 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
+
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,10 +42,9 @@ import java.util.Calendar;
 
 import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.adaptadores.DialogoListaCampoClientes;
-import at.ums.luna.liebochlieferschein.database.DBHelper;
+
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
-import at.ums.luna.liebochlieferschein.inicio.MainActivity;
-import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
+
 import at.ums.luna.liebochlieferschein.modelos.Clientes;
 import at.ums.luna.liebochlieferschein.servidor.Defaults;
 import at.ums.luna.liebochlieferschein.servidor.MySingleton;
@@ -72,12 +71,8 @@ public class AlbaranesCabeceraFragment extends Fragment {
     RadioGroup recogida2;
     private String esRecogida;
 
-    int textlength = 0;
     private EditText et;
     ListView lv;
-    private ArrayList<String> array_sort = new ArrayList<String>();
-    private String listview_array[];
-
 
     private int mYear;
     private int mMonth;
@@ -97,6 +92,8 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
         Bundle args = getArguments();
         codigoAlbaranObtenido = args.getString("codigoObtenido");
+
+        operacionesServidor = new OperacionesServidor();
 
 
         // Inflate the layout for this fragment
@@ -178,6 +175,7 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
     private void refrescarDatos() {
         mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
+
 
         fecha = (TextView)getView().findViewById(R.id.tvFecha);
         idCliente = (TextView)getView().findViewById(R.id.tvIdCliente);
@@ -294,10 +292,7 @@ public class AlbaranesCabeceraFragment extends Fragment {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                String [] codigoAlbAEliminar = {codigoAlbaranObtenido};
-
-                                mOperacionesBaseDatos.eliminarCabeceraAlbaran(codigoAlbAEliminar, esteContexto);
-
+                                operacionesServidor.eliminarCabeceraAlbaran(esteContexto,codigoAlbaranObtenido);
                                 getActivity().finish();
 
                             }
@@ -311,20 +306,19 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
         String [] idAlbaranActual = {codigoAlbaranObtenido};
         String fechaActual = fecha.getText().toString();
-        int idClienteActual= Integer.parseInt(idCliente.getText().toString());
+        String idClienteActual= idCliente.getText().toString();
 
         RadioButton rbRecogida = (RadioButton) getView().findViewById(R.id.radioButtonRecogida);
 
-        mOperacionesBaseDatos.actualizarCabeceraAlbaran(idAlbaranActual,fechaActual,idClienteActual, esRecogida);
+        operacionesServidor.editarCabeceraAlbaran(esteContexto,codigoAlbaranObtenido,fechaActual,idClienteActual, esRecogida);
 
 
     }
 
     private void seleccionarCliente(){
 
-        String[]camposMostrados = {DBHelper.Clientes.NOMBRE};
+        final ArrayList<Clientes> listaDeClientesInicial= operacionesServidor.verListaClientesServidor1(esteContexto);
 
-        final ArrayList<String> listaDeClientesInicial= mOperacionesBaseDatos.datosCampoClientes(camposMostrados);
 
         final Dialog dialog = new Dialog(esteContexto);
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialogo_lista_clientes, null);
@@ -340,14 +334,9 @@ public class AlbaranesCabeceraFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String valorObtenido = listaDeClientesInicial.get(position).toString();
-
-                Clientes clienteElegido = mOperacionesBaseDatos.obtenerClienteAlElegirEnDialogo(valorObtenido);
-
-
-                idCliente.setText(String.valueOf(clienteElegido.getId()));
-                nombreCliente.setText((clienteElegido.getNombre()));
-                direccionCliente.setText(clienteElegido.getDireccion());
+                idCliente.setText(String.valueOf(listaDeClientesInicial.get(position).getId()));
+                nombreCliente.setText(listaDeClientesInicial.get(position).getNombre());
+                direccionCliente.setText(listaDeClientesInicial.get(position).getDireccion());
 
                 Actualizar();
 
@@ -358,7 +347,6 @@ public class AlbaranesCabeceraFragment extends Fragment {
         dialog.setContentView(view);
         dialog.show();
 
-        listview_array = listaDeClientesInicial.toArray(new String[0]);
 
         et.addTextChangedListener(new TextWatcher() {
             @Override
@@ -373,18 +361,20 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textlength = et.getText().length();
-                array_sort.clear();
 
-                for (int i = 0; i < listview_array.length; i++) {
-                    if (textlength <= listview_array[i].length()) {
-                        if (et.getText().toString().equalsIgnoreCase((String) listview_array[i].subSequence(0, textlength))) {
-                            array_sort.add(listview_array[i]);
-                        }
+                final ArrayList<Clientes> listaDeClientesFiltrada = new ArrayList<Clientes>();
+
+                for (Clientes clientes : listaDeClientesInicial) {
+                    if (clientes.getNombre().contains(s)){
+                        listaDeClientesFiltrada.add(clientes);
+                    }
+                    if (String.valueOf(clientes.getId()).contains(s)){
+                        listaDeClientesFiltrada.add(clientes);
                     }
                 }
 
-                DialogoListaCampoClientes dialogoFinal = new DialogoListaCampoClientes(esteContexto, array_sort);
+
+                DialogoListaCampoClientes dialogoFinal = new DialogoListaCampoClientes(esteContexto, listaDeClientesFiltrada);
 
                 lv.setAdapter(dialogoFinal);
 
@@ -393,14 +383,9 @@ public class AlbaranesCabeceraFragment extends Fragment {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                        String valorObtenido = array_sort.get(position).toString();
-
-                        Clientes clienteElegido1 = mOperacionesBaseDatos.obtenerClienteAlElegirEnDialogo(valorObtenido);
-
-
-                        idCliente.setText(String.valueOf(clienteElegido1.getId()));
-                        nombreCliente.setText((clienteElegido1.getNombre()));
-                        direccionCliente.setText(clienteElegido1.getDireccion());
+                        idCliente.setText(String.valueOf(listaDeClientesFiltrada.get(position).getId()));
+                        nombreCliente.setText(listaDeClientesFiltrada.get(position).getNombre());
+                        direccionCliente.setText(listaDeClientesFiltrada.get(position).getDireccion());
 
                         Actualizar();
 

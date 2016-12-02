@@ -91,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
         operacionesServidor = new OperacionesServidor();
 
+
+
         //rellenamos trabajadorActual
         mostrarPreferencias();
 
@@ -164,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void botonListaClientes(View v) {
- //       Intent intento = new Intent(this, ListaClientes.class);
-        Intent intento = new Intent(this, ListadoClientes.class);
+        Intent intento = new Intent(this, ListaClientes.class);
+//        Intent intento = new Intent(this, ListadoClientes.class);
         startActivity(intento);
     }
 

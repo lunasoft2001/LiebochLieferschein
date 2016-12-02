@@ -49,7 +49,6 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
     /*
     Variables SOLO para SQLite
      */
-    OperacionesBaseDatos mOperacionesBaseDatos;
     private List<CabeceraAlbaranes> mCabeceraAlbaranes;
     OperacionesServidor operacionesServidor;
     Context context;
@@ -109,8 +108,6 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
             }
         });
 
-
-        mOperacionesBaseDatos = new OperacionesBaseDatos(this);
         operacionesServidor = new OperacionesServidor();
 
         new ListaCabeceraAsync().execute();
@@ -167,6 +164,8 @@ public class ListaAlbaranesCabecera extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             //obtenemos el listado de Clientes desde el servidor
             mCabeceraAlbaranes = operacionesServidor.verListaAlbaranesCabeceraCompleta(context);
+
+            while ( mCabeceraAlbaranes.size()==0){}
 
             return null;
         }
