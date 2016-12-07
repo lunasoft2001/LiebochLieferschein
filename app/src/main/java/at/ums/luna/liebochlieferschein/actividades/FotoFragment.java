@@ -19,11 +19,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
+
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import at.ums.luna.liebochlieferschein.R;
+import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +50,8 @@ public class FotoFragment extends Fragment {
     private Context esteContexto;
     private static int TAKE_PICTURE = 1;
     public static final int RESULT_OK = -1;
+
+    private File image;
 
     public FotoFragment() {
         // Required empty public constructor
@@ -67,15 +80,9 @@ public class FotoFragment extends Fragment {
         tempDir = Environment.getExternalStorageDirectory() + "/" + getResources().getString(R.string.external_dir) + "/";
 
         imagen = (ImageView) getView().findViewById(R.id.imageFoto);
-        String archivo = tempDir + nombreFoto;
-        File fichero = new File(archivo);
 
-        if(fichero.exists()){
-            Bitmap bMap = BitmapFactory.decodeFile(archivo);
-            imagen.setImageBitmap(bMap);
 
-            rodarFoto(bMap);
-        }
+        mostrarFoto();
 
 
         ImageButton getSignature = (ImageButton) getView().findViewById(R.id.botonFoto);
@@ -85,7 +92,7 @@ public class FotoFragment extends Fragment {
                 File imagesFolder = new File(
                         Environment.getExternalStorageDirectory(),getResources().getString(R.string.external_dir));
                 imagesFolder.mkdirs();
-                File image = new File(imagesFolder,nombreFoto);
+                image = new File(imagesFolder,nombreFoto);
                 Uri uriSavedImage = Uri.fromFile(image);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
                 startActivityForResult(intent,TAKE_PICTURE);
@@ -100,50 +107,31 @@ public class FotoFragment extends Fragment {
         if (requestCode == 1 && resultCode == RESULT_OK) {
 
 
-            //Metodo inicial
-            Bitmap bMap = BitmapFactory.decodeFile(
-                    tempDir + nombreFoto);
-            imagen.setImageBitmap(bMap);
+            final String ruta = image.getAbsoluteFile().toString();
 
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //creating new thread to handle Http Operations
+                    OperacionesServidor op = new OperacionesServidor();
+                    op.uploadFile(ruta,getActivity(),esteContexto);
+                }
+            }).start();
 
-            rodarFoto(bMap);
+            mostrarFoto();
 
         }
 
     }
 
-    public void rodarFoto(Bitmap bMap){
-
+    public void mostrarFoto(){
+        //mostrar foto con picasso
         String archivo = tempDir + nombreFoto;
-        File imageFile = new File(archivo);
 
-        try {
-            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL);
-            int rotate = 0;
-            switch (orientation){
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotate-=90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotate=180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotate=90;
-                    break;
-            }
+        File fichero = new File(archivo);
 
-            Log.i("JUANJO","orientation = " + orientation + " - rotate = " + rotate);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(rotate);
-
-            Bitmap nuevoBitmap = Bitmap.createBitmap(bMap,0,0,bMap.getWidth(),bMap.getHeight(),matrix,true);
-
-            imagen.setImageBitmap(nuevoBitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Picasso.with(esteContexto).load(fichero).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
     }
+
 
 }

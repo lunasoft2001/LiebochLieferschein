@@ -5,15 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
+
 
 import java.io.File;
 
@@ -57,7 +63,7 @@ public class firmaFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-
+        imagen = (ImageView) getView().findViewById(R.id.imageFirma);
 
         ImageButton getSignature = (ImageButton) getView().findViewById(R.id.botonFirma);
         getSignature.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +73,8 @@ public class firmaFragment extends Fragment {
                 startActivity(intento);
             }
         });
+
+
     }
 
     @Override
@@ -75,16 +83,12 @@ public class firmaFragment extends Fragment {
 
         tempDir = Environment.getExternalStorageDirectory() + "/" + getResources().getString(R.string.external_dir) + "/";
         imagen = (ImageView) getView().findViewById(R.id.imageFirma);
+
         String archivo = tempDir + nombreFirma;
 
         File fichero = new File(archivo);
 
-        if(fichero.exists()){
-            Bitmap bMap = BitmapFactory.decodeFile(archivo);
-
-            imagen.setImageBitmap(bMap);
-        }
+        Picasso.with(esteContexto).load(fichero).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
 
     }
-
 }

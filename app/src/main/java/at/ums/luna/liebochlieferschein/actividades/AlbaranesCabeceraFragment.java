@@ -58,7 +58,7 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
     private String codigoAlbaranObtenido;
 
-    private OperacionesBaseDatos mOperacionesBaseDatos;
+    //private OperacionesBaseDatos mOperacionesBaseDatos;
     private OperacionesServidor operacionesServidor;
     private Context esteContexto;
 
@@ -174,7 +174,7 @@ public class AlbaranesCabeceraFragment extends Fragment {
 
 
     private void refrescarDatos() {
-        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
+        //mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
 
 
         fecha = (TextView)getView().findViewById(R.id.tvFecha);

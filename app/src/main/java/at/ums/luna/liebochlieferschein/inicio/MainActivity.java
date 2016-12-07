@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -14,38 +12,21 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.actividades.ListaAlbaranesCabecera;
 import at.ums.luna.liebochlieferschein.actividades.ListaClientes;
-import at.ums.luna.liebochlieferschein.actividades.ListadoClientes;
 import at.ums.luna.liebochlieferschein.actividades.Preferencias;
-import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
 import at.ums.luna.liebochlieferschein.servidor.Defaults;
 import at.ums.luna.liebochlieferschein.servidor.MySingleton;
 import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;

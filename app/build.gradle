@@ -33,4 +33,8 @@ dependencies {
     compile 'com.kyanogen.signatureview:signature-view:1.0'
     compile files('libs/itextg-5.5.8.jar')
     compile 'com.mcxiaoke.volley:library:1.0.19'
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+
 }

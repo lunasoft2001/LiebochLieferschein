@@ -1,6 +1,7 @@
 package at.ums.luna.liebochlieferschein.actividades;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -8,12 +9,20 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.itextpdf.text.DocumentException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +32,14 @@ import at.ums.luna.liebochlieferschein.adaptadores.PdfManager;
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
 import at.ums.luna.liebochlieferschein.modelos.AlbaranCompleto;
 import at.ums.luna.liebochlieferschein.modelos.CabeceraAlbaranes;
+import at.ums.luna.liebochlieferschein.servidor.Defaults;
+import at.ums.luna.liebochlieferschein.servidor.MySingleton;
+import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 public class FormularioAlbaranesCabecera extends FragmentActivity {
 
     OperacionesBaseDatos mOperacionesBaseDatos;
+    OperacionesServidor mOperacionesServidor;
 
     private String codigoAlbaranObtenido;
     private TextView numeroAlbaran;
@@ -64,17 +77,14 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
 
 
         mOperacionesBaseDatos = new OperacionesBaseDatos(this);
-
-
-
+        mOperacionesServidor = new OperacionesServidor();
 
         //Creamos un albaran desde nuestro código solo para poder generar el documento PDF con esta información
-
-
 
         try {
             //Instanciamos la clase PdfManager
             pdfManager = new PdfManager(FormularioAlbaranesCabecera.this);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,13 +102,9 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
         create_pdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Create PDF document
-                createInvoiceObject();
-                assert pdfManager != null;
-                pdfManager.createPdfDocument(invoiceObject, codigoAlbaranObtenido);
-                read_pdf.setVisibility(View.VISIBLE);
-                send_email_pdf.setVisibility(View.VISIBLE);
 
+                //Create PDF document
+                new obtenerIvoiceObjectAsync().execute();
 
             }
         });
@@ -122,6 +128,33 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
             }
         });
 
+    }
+
+
+    private class obtenerIvoiceObjectAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            createInvoiceObject();
+
+            assert pdfManager != null;
+
+            while (invoiceObject.codigoAlbaran == null){}
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            pdfManager.createPdfDocument(invoiceObject, codigoAlbaranObtenido);
+            read_pdf.setVisibility(View.VISIBLE);
+            send_email_pdf.setVisibility(View.VISIBLE);
+
+
+        }
     }
 
     private class AdaptadorPager extends FragmentPagerAdapter {
@@ -192,17 +225,17 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
     //Crea el documento importando los datos
     private void createInvoiceObject() {
 
+        CabeceraAlbaranes albaran = mOperacionesServidor.obtenerAlbaranCompleto(this, codigoAlbaranObtenido);
+        while (albaran.getCodigoAlbaran()==null){}
 
-        CabeceraAlbaranes cabeceraActual = mOperacionesBaseDatos.obtenerCabeceraAlbaran(codigoAlbaranObtenido);
-
-        invoiceObject.codigoAlbaran = cabeceraActual.getCodigoAlbaran();
-        invoiceObject.fecha = cabeceraActual.getFecha();
-        invoiceObject.idCliente = cabeceraActual.getIdCliente();
-        invoiceObject.nombreCliente = cabeceraActual.getNombreCliente();
-        invoiceObject.direccionCliente = cabeceraActual.getDireccionCliente();
-        invoiceObject.telefonoCliente = cabeceraActual.getTelefonoCliente();
-        invoiceObject.emailCliente = cabeceraActual.getEmailCliente();
-        invoiceObject.recogida = cabeceraActual.getRecogida();
+        invoiceObject.codigoAlbaran = albaran.getCodigoAlbaran();
+        invoiceObject.fecha = albaran.getFecha();
+        invoiceObject.idCliente = albaran.getIdCliente();
+        invoiceObject.nombreCliente = albaran.getNombreCliente();
+        invoiceObject.direccionCliente = albaran.getDireccionCliente();
+        invoiceObject.telefonoCliente = albaran.getTelefonoCliente();
+        invoiceObject.emailCliente = albaran.getEmailCliente();
+        invoiceObject.recogida = albaran.getRecogida();
 
         invoiceObject.listaDetallesAlbaran = mOperacionesBaseDatos.verListaDetalleAlbaran(codigoAlbaranObtenido);
 

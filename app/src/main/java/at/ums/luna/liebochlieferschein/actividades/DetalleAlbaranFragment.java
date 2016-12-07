@@ -3,6 +3,7 @@ package at.ums.luna.liebochlieferschein.actividades;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -20,6 +30,9 @@ import at.ums.luna.liebochlieferschein.adaptadores.ListaAlbaranesDetalleAdapter;
 import at.ums.luna.liebochlieferschein.adaptadores.RecyclerItemClickListener;
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
 import at.ums.luna.liebochlieferschein.modelos.DetalleAlbaranes;
+import at.ums.luna.liebochlieferschein.servidor.Defaults;
+import at.ums.luna.liebochlieferschein.servidor.MySingleton;
+import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +49,8 @@ public class DetalleAlbaranFragment extends Fragment {
 
 
     private String codigoAlbaranObtenido;
-    private OperacionesBaseDatos mOperacionesBaseDatos;
+//    private OperacionesBaseDatos mOperacionesBaseDatos;
+    private OperacionesServidor mOperacionesServidor;
     private Context esteContexto;
 
     private List<DetalleAlbaranes> mDetalleAlbaranes;
@@ -68,8 +82,6 @@ public class DetalleAlbaranFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-
         cargaInicial();
 
         //Codigo para el onClickListener
@@ -90,14 +102,11 @@ public class DetalleAlbaranFragment extends Fragment {
 
 
     private void cargaInicial() {
-        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
+//        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
+        mOperacionesServidor = new OperacionesServidor();
 
 
-
-        ultimaLinea = (TextView) getView().findViewById(R.id.tvNumeroLineas);
-
-
-
+        obtenerUltimaLinea();
 
         // Obtener el Recycler
         recycler = (RecyclerView) getView().findViewById(R.id.reciclador);
@@ -120,10 +129,7 @@ public class DetalleAlbaranFragment extends Fragment {
                         valorLineaAlbaran = String.valueOf(detalleElegido.getLinea());
 
                         abrirDetalle(valorCodigoAlbaran,valorLineaAlbaran);
-//                        Intent intento = new Intent(esteContexto, FormularioAlbaranesDetalle.class);
-//                        intento.putExtra("codigoAlbaran", valorCodigoAlbaran);
-//                        intento.putExtra("linea", valorLineaAlbaran);
-//                        startActivity(intento);
+
 
                     }
                 })
@@ -138,15 +144,44 @@ public class DetalleAlbaranFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        valorUltimaLinea = mOperacionesBaseDatos.ultimaLineaAlbaran(codigoAlbaranObtenido);
-        ultimaLinea.setText(String.valueOf(valorUltimaLinea));
+//        valorUltimaLinea = mOperacionesBaseDatos.ultimaLineaAlbaran(codigoAlbaranObtenido);
+//        ultimaLinea.setText(String.valueOf(valorUltimaLinea));
+        valorUltimaLinea = 0;
+        obtenerUltimaLinea();
 
-
-        mDetalleAlbaranes = mOperacionesBaseDatos.verListaDetalleAlbaran(codigoAlbaranObtenido);
-        adapter = new ListaAlbaranesDetalleAdapter(mDetalleAlbaranes);
-        recycler.setAdapter(adapter);
+        new ListaDetalleAsync().execute();
+//        mDetalleAlbaranes = mOperacionesBaseDatos.verListaDetalleAlbaran(codigoAlbaranObtenido);
+//        adapter = new ListaAlbaranesDetalleAdapter(mDetalleAlbaranes);
+//        recycler.setAdapter(adapter);
 
     }
+
+    private class ListaDetalleAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            //obtenemos el listado de Clientes desde el servidor
+            mDetalleAlbaranes = mOperacionesServidor.verListaDetalleAlbaran(esteContexto, codigoAlbaranObtenido);
+
+            while ( mDetalleAlbaranes.size()==0){}
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            //verificamos que no esta vacio
+            if (mDetalleAlbaranes.get(0).getCodigoAlbaran() != "error") {
+
+                //inicializamos el RecyclerView y el adapter con la data obtenida
+                adapter = new ListaAlbaranesDetalleAdapter(mDetalleAlbaranes);
+                recycler.setAdapter(adapter);
+            }
+        }
+    }
+
 
     public void abrirDetalle(String codigo, String linea){
 
@@ -161,14 +196,46 @@ public class DetalleAlbaranFragment extends Fragment {
         int nuevaLinea = valorUltimaLinea+1;
         String nuevaLineaTexto = String.valueOf(nuevaLinea);
 
-        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
-        mOperacionesBaseDatos.nuevoDetalleAlbaran(nuevaLinea,codigoAlbaranObtenido);
+//        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
+//        mOperacionesBaseDatos.nuevoDetalleAlbaran(nuevaLinea,codigoAlbaranObtenido);
+        mOperacionesServidor = new OperacionesServidor();
+        mOperacionesServidor.nuevoDetalleAlbaran(esteContexto,valorUltimaLinea,codigoAlbaranObtenido);
 
-        valorUltimaLinea = mOperacionesBaseDatos.ultimaLineaAlbaran(codigoAlbaranObtenido);
-        ultimaLinea.setText(String.valueOf(valorUltimaLinea));
+
+        obtenerUltimaLinea();
+
 
         abrirDetalle(codigoAlbaranObtenido,nuevaLineaTexto);
 
+    }
+
+    private void obtenerUltimaLinea(){
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "obtener_ultima_linea_detalle.php?codigoAlbaran=" + codigoAlbaranObtenido,
+                (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                try {
+                    valorUltimaLinea = response.getInt("Max(linea)");
+                    ultimaLinea = (TextView) getView().findViewById(R.id.tvNumeroLineas);
+                    ultimaLinea.setText(String.valueOf(valorUltimaLinea));
+
+                }catch (JSONException e){
+                    e.printStackTrace();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(esteContexto, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+
+            }
+        });
+
+        MySingleton.getInstance(esteContexto).addToRequestque(jsonObjectRequest);
     }
 
 
