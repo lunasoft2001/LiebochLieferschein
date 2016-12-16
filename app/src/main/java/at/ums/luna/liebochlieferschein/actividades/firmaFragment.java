@@ -18,10 +18,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import at.ums.luna.liebochlieferschein.R;
 
@@ -75,20 +79,49 @@ public class firmaFragment extends Fragment {
         });
 
 
+        imagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //desde el servidor
+                tempDir = "http://77.119.243.100/upload-test/uploads/";
+                imagen = (ImageView) getView().findViewById(R.id.imageFirma);
+
+                String archivo = tempDir + nombreFirma;
+
+
+                Picasso.with(esteContexto).load(archivo).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
+
+            }
+        });
+
+
     }
+
+
 
     @Override
     public void onResume() {
         super.onResume();
 
-        tempDir = Environment.getExternalStorageDirectory() + "/" + getResources().getString(R.string.external_dir) + "/";
+        //desde la memoria del telefono
+//        tempDir = Environment.getExternalStorageDirectory() + "/" + getResources().getString(R.string.external_dir) + "/";
+//        imagen = (ImageView) getView().findViewById(R.id.imageFirma);
+//
+//        String archivo = tempDir + nombreFirma;
+//
+//        File fichero = new File(archivo);
+//
+//        Picasso.with(esteContexto).load(fichero).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
+
+        //desde el servidor
+        tempDir = "http://77.119.243.100/upload-test/uploads/";
         imagen = (ImageView) getView().findViewById(R.id.imageFirma);
 
         String archivo = tempDir + nombreFirma;
 
-        File fichero = new File(archivo);
 
-        Picasso.with(esteContexto).load(fichero).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
+        Picasso.with(esteContexto).load(archivo).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
 
     }
 }

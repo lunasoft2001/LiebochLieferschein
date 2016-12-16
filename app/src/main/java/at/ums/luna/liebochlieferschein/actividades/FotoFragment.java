@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.DataOutputStream;
@@ -99,6 +100,20 @@ public class FotoFragment extends Fragment {
             }
         });
 
+
+
+        imagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //desde el servidor
+                tempDir = "http://77.119.243.100/upload-test/uploads/";
+                String archivo = tempDir + nombreFoto;
+                Picasso.with(esteContexto).load(archivo).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
+
+            }
+        });
+
     }
 
     @Override
@@ -125,12 +140,21 @@ public class FotoFragment extends Fragment {
     }
 
     public void mostrarFoto(){
-        //mostrar foto con picasso
+        //mostrar foto con picasso desde la memoria del telefono
+//        String archivo = tempDir + nombreFoto;
+//
+//        File fichero = new File(archivo);
+//
+//        Picasso.with(esteContexto).load(fichero).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
+
+        //desde el servidor
+        tempDir = "http://77.119.243.100/upload-test/uploads/";
         String archivo = tempDir + nombreFoto;
 
-        File fichero = new File(archivo);
+        Picasso.with(esteContexto).load(archivo).memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
 
-        Picasso.with(esteContexto).load(fichero).memoryPolicy(MemoryPolicy.NO_CACHE).error(R.drawable.leer).into(imagen);
+
+
     }
 
 

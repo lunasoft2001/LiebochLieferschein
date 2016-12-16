@@ -82,6 +82,8 @@ public class DetalleAlbaranFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        ultimaLinea = (TextView) getView().findViewById(R.id.tvNumeroLineas);
+
         cargaInicial();
 
         //Codigo para el onClickListener
@@ -211,7 +213,7 @@ public class DetalleAlbaranFragment extends Fragment {
 
                 try {
                     valorUltimaLinea = response.getInt("Max(linea)");
-                    ultimaLinea = (TextView) getView().findViewById(R.id.tvNumeroLineas);
+//                    ultimaLinea = (TextView) getView().findViewById(R.id.tvNumeroLineas);
                     ultimaLinea.setText(String.valueOf(valorUltimaLinea));
 
                 }catch (JSONException e){
