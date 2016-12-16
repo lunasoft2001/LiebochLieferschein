@@ -1,5 +1,7 @@
 package at.ums.luna.liebochlieferschein.actividades;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,7 +40,6 @@ import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 public class FormularioAlbaranesCabecera extends FragmentActivity {
 
-    OperacionesBaseDatos mOperacionesBaseDatos;
     OperacionesServidor mOperacionesServidor;
 
     private String codigoAlbaranObtenido;
@@ -46,6 +47,7 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
     ImageButton create_pdf;
     ImageButton read_pdf;
     ImageButton send_email_pdf;
+    Activity activity;
 
 
     AlbaranCompleto invoiceObject = new AlbaranCompleto();
@@ -53,6 +55,9 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
     private String FILENAME;
 
     private PdfManager pdfManager = null;
+
+    private ProgressDialog dialogo;
+    private String documentoPDF;
 
 
     @Override
@@ -75,8 +80,11 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
 
         FILENAME = codigoAlbaranObtenido + ".pdf";
 
+        dialogo = new ProgressDialog(this);
+        activity= this;
 
-        mOperacionesBaseDatos = new OperacionesBaseDatos(this);
+        documentoPDF = "";
+
         mOperacionesServidor = new OperacionesServidor();
 
         //Creamos un albaran desde nuestro código solo para poder generar el documento PDF con esta información
@@ -106,6 +114,15 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
                 //Create PDF document
                 new obtenerIvoiceObjectAsync().execute();
 
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        //creating new thread to handle Http Operations
+//                        OperacionesServidor op = new OperacionesServidor();
+//                        op.uploadFile(documentoPDF,activity,FormularioAlbaranesCabecera.this);
+//                    }
+//                }).start();
+
             }
         });
 
@@ -120,18 +137,59 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
         send_email_pdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createInvoiceObject();
-                String emailTo = invoiceObject.emailCliente;
-                String emailCC = "juanjolunabowling@gmail.com";
-                assert pdfManager != null;
-                pdfManager.sendPdfByEmail(INVOICES_FOLDER + File.separator + FILENAME, emailTo, emailCC, FormularioAlbaranesCabecera.this);
+
+                new enviarEmailAsync().execute();
+
             }
         });
 
     }
 
 
+    private class enviarEmailAsync extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            dialogo.setMessage("Sending PDF");
+            dialogo.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            createInvoiceObject();
+
+            while (invoiceObject.codigoAlbaran == null){}
+
+//            while (invoiceObject.listaDetallesAlbaran.size() == 0){ }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            String emailTo = invoiceObject.emailCliente;
+            String emailCC = "juanjolunabowling@gmail.com";
+            assert pdfManager != null;
+
+            pdfManager.sendPdfByEmail(INVOICES_FOLDER + File.separator + FILENAME, emailTo, emailCC, FormularioAlbaranesCabecera.this);
+
+            dialogo.dismiss();
+
+        }
+
+    }
+
     private class obtenerIvoiceObjectAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            dialogo.setMessage("Creating PDF");
+            dialogo.show();
+
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -142,6 +200,8 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
 
             while (invoiceObject.codigoAlbaran == null){}
 
+            while (invoiceObject.listaDetallesAlbaran.size() == 0){ }
+
             return null;
         }
 
@@ -149,10 +209,17 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            pdfManager.createPdfDocument(invoiceObject, codigoAlbaranObtenido);
+            if (invoiceObject.listaDetallesAlbaran.get(0).getDetalle().equals("error")){
+                Toast.makeText(FormularioAlbaranesCabecera.this,"ACHTUNG: DETAIL IST LEER...",Toast.LENGTH_LONG).show();
+            }
+
+            documentoPDF = pdfManager.createPdfDocument(invoiceObject, codigoAlbaranObtenido);
             read_pdf.setVisibility(View.VISIBLE);
             send_email_pdf.setVisibility(View.VISIBLE);
 
+            dialogo.dismiss();
+
+            Log.i("JJ", " el PDF es: "+  documentoPDF);
 
         }
     }
@@ -237,7 +304,7 @@ public class FormularioAlbaranesCabecera extends FragmentActivity {
         invoiceObject.emailCliente = albaran.getEmailCliente();
         invoiceObject.recogida = albaran.getRecogida();
 
-        invoiceObject.listaDetallesAlbaran = mOperacionesBaseDatos.verListaDetalleAlbaran(codigoAlbaranObtenido);
+        invoiceObject.listaDetallesAlbaran = mOperacionesServidor.verListaDetalleAlbaran(this, codigoAlbaranObtenido);
 
 
     }

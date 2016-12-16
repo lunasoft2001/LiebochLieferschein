@@ -77,14 +77,15 @@ public class PdfManager {
         italicFont = new Font(unicode, 12,Font.ITALIC, BaseColor.BLACK);
         italicFontBold = new Font(unicode, 12,Font.ITALIC|Font.BOLD, BaseColor.BLACK);
 
-        codigoAlbaranActual = "JJ160001";
+        codigoAlbaranActual = "";
 
     }
 
     //Generando el documento PDF
-    public void createPdfDocument(AlbaranCompleto invoiceObject, String codigoAlbaranObtenido) {
+    public String createPdfDocument(AlbaranCompleto invoiceObject, String codigoAlbaranObtenido) {
 
         codigoAlbaranActual = codigoAlbaranObtenido;
+        String resultado = "";
 
         try {
 
@@ -105,8 +106,8 @@ public class PdfManager {
                 addImageResource(document,R.drawable.unten,PageSize.A4.getWidth(),200f,0f,0f);
                 addImageResource(document,R.drawable.oben,PageSize.A4.getWidth(),200f,0f,750f);
 
+//                String tempDir = Environment.getExternalStorageDirectory() + "/" + APP_FOLDER_NAME + "/";
                 String tempDir = Environment.getExternalStorageDirectory() + "/" + APP_FOLDER_NAME + "/";
-
                 //agregar firma
                 String archivoFirma = tempDir + "firma"+codigoAlbaranActual+".jpg";
                 File ficheroFirma = new File(archivoFirma);
@@ -135,11 +136,16 @@ public class PdfManager {
 
                 Toast.makeText(mContext, R.string.pdf_creado, Toast.LENGTH_SHORT).show();
 
+                resultado = fullFileName;
+
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            resultado = "error";
         }
+
+        return resultado;
     }
 
     private String createDirectoryAndFileName(String codigoAlbaranActual){

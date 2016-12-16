@@ -481,7 +481,6 @@ public class OperacionesServidor {
             @Override
             public void onErrorResponse(VolleyError error) {
 
-//                Toast.makeText(context,"Error.... en detalle", Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
                 DetalleAlbaranes detalle = new DetalleAlbaranes("error",0,"error",0,"error");
                 arrayList.add(detalle);
@@ -549,6 +548,90 @@ public class OperacionesServidor {
 
     }
 
+    public ArrayList<String> editarDetalleAlbaran(final Context context, final String codigoAlbaran, final String linea,
+                                      final String detalle, final String cantidad, final String tipo){
+
+        final ArrayList<String> respuesta = new ArrayList<>();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "actualizar_detalle_albaran.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(context, "Detail updated", Toast.LENGTH_LONG).show();
+                        respuesta.add(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context, "error", Toast.LENGTH_LONG).show();
+                error.printStackTrace();
+
+            }
+        })
+        {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                JSONObject jsonBody = new JSONObject();
+
+                try {
+                    jsonBody.put("codigoAlbaran",codigoAlbaran);
+                    jsonBody.put("linea",linea);
+                    jsonBody.put("detalle",detalle);
+                    jsonBody.put("cantidad",cantidad);
+                    jsonBody.put("tipo",tipo);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                final String mRequestBody = jsonBody.toString();
+
+                try {
+                    return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                    return null;
+                }
+            }
+        };
+        MySingleton.getInstance(context).addToRequestque(stringRequest);
+
+        return respuesta;
+
+    }
+
+    public void eliminarDetalleAlbaran(final Context context, String codigoAlbaran, String linea){
+
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "borrar_detalle_albaran.php?codigoAlbaran=" + codigoAlbaran + "&linea=" + linea,
+                (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                    Toast.makeText(context,"Detail gelösch", Toast.LENGTH_LONG).show();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("JJ", error.toString());
+                Toast.makeText(context, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+
+            }
+        });
+
+        MySingleton.getInstance(context).addToRequestque(jsonObjectRequest);
+
+    }
+
 
 /**
  * EXTRAS
@@ -561,7 +644,7 @@ public class OperacionesServidor {
         return formateador.format(ahora);
     }
 
-    //android upload file to server
+    //carga archivos en el servidor
     public int uploadFile(final String selectedFilePath, Activity activity, final Context context){
 
         int serverResponseCode = 0;
@@ -584,7 +667,6 @@ public class OperacionesServidor {
         final String fileName = parts[parts.length-1];
 
         if (!selectedFile.isFile()){
-//            dialog.dismiss();
 
             activity.runOnUiThread(new Runnable() {
                 @Override
@@ -678,7 +760,6 @@ public class OperacionesServidor {
                 e.printStackTrace();
                 Toast.makeText(context, "Cannot Read/Write File!", Toast.LENGTH_SHORT).show();
             }
-//            dialog.dismiss();
             return serverResponseCode;
         }
 

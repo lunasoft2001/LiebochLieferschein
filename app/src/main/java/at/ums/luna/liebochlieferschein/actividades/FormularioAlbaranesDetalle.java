@@ -3,21 +3,38 @@ package at.ums.luna.liebochlieferschein.actividades;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import at.ums.luna.liebochlieferschein.R;
 import at.ums.luna.liebochlieferschein.database.OperacionesBaseDatos;
 import at.ums.luna.liebochlieferschein.modelos.DetalleAlbaranes;
+import at.ums.luna.liebochlieferschein.servidor.Defaults;
+import at.ums.luna.liebochlieferschein.servidor.MySingleton;
+import at.ums.luna.liebochlieferschein.servidor.OperacionesServidor;
 
 public class FormularioAlbaranesDetalle extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -33,6 +50,7 @@ public class FormularioAlbaranesDetalle extends AppCompatActivity implements Ada
     private String valorLinea;
 
     private OperacionesBaseDatos mOperacionesBaseDatos;
+    private OperacionesServidor mOperacionesServidor;
 
 
     @Override
@@ -60,22 +78,14 @@ public class FormularioAlbaranesDetalle extends AppCompatActivity implements Ada
 
         Bundle bundle = intento.getExtras();
         if(bundle != null) {
-
             valorCodigoAlbaran = bundle.getString("codigoAlbaran");
             valorLinea = bundle.getString("linea");
-
         }
 
         mOperacionesBaseDatos = new OperacionesBaseDatos(this);
+        mOperacionesServidor = new OperacionesServidor();
 
-        DetalleAlbaranes detalleAlbaranes = mOperacionesBaseDatos.obtenerDetalleAlbaran(valorCodigoAlbaran, valorLinea);
-
-        codigoAlbaran.setText(detalleAlbaranes.getCodigoAlbaran());
-        linea.setText(String.valueOf(detalleAlbaranes.getLinea()));
-        detalle.setText(detalleAlbaranes.getDetalle());
-        cantidad.setText(String.valueOf(detalleAlbaranes.getCantidad()));
-        tipo.setText(detalleAlbaranes.getTipo());
-
+        obtenerDatos();
 
         //cierra el teclado al hacer click
 
@@ -132,6 +142,41 @@ public class FormularioAlbaranesDetalle extends AppCompatActivity implements Ada
         }
     };
 
+
+    private void obtenerDatos(){
+
+        //Obtiene los datos del servidor
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                Defaults.SERVER_URL + "obtener_detalle_albaran_por_id.php?codigoAlbaran=" + valorCodigoAlbaran + "&linea=" + valorLinea,
+                (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                try {
+                    codigoAlbaran.setText(response.getString("codigoAlbaran"));
+                    linea.setText(String.valueOf(response.getString("linea")));
+                    detalle.setText(response.getString("detalle"));
+                    cantidad.setText(String.valueOf(response.getDouble("cantidad")));
+                    tipo.setText(response.getString("tipo"));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("JJ", error.toString());
+                Toast.makeText(FormularioAlbaranesDetalle.this, "Algo salio mal " + error,Toast.LENGTH_SHORT).show();
+                error.printStackTrace();
+
+            }
+        });
+
+        MySingleton.getInstance(this).addToRequestque(jsonObjectRequest);
+    }
+
     private void Eliminar(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -148,8 +193,8 @@ public class FormularioAlbaranesDetalle extends AppCompatActivity implements Ada
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-
-                                mOperacionesBaseDatos.eliminarDetalleAlbaran(valorCodigoAlbaran,valorLinea, FormularioAlbaranesDetalle.this);
+//                                mOperacionesBaseDatos.eliminarDetalleAlbaran(valorCodigoAlbaran,valorLinea, FormularioAlbaranesDetalle.this);
+                                mOperacionesServidor.eliminarDetalleAlbaran(FormularioAlbaranesDetalle.this, valorCodigoAlbaran, valorLinea);
 
                                 finish();
 
@@ -163,13 +208,43 @@ public class FormularioAlbaranesDetalle extends AppCompatActivity implements Ada
     private void Actualizar(){
 
         String detalleActual = detalle.getText().toString();
-        double cantidadActual = Double.parseDouble(cantidad.getText().toString());
+        String cantidadActual = cantidad.getText().toString();
         String tipoActual = tipo.getText().toString();
 
-        mOperacionesBaseDatos.actualizarDetalleAlbaran(valorCodigoAlbaran,valorLinea,detalleActual,
-                cantidadActual,tipoActual);
+//        mOperacionesBaseDatos.actualizarDetalleAlbaran(valorCodigoAlbaran,valorLinea,detalleActual,
+//                cantidadActual,tipoActual);
 
-        finish();
+        new cerrarAsync().execute();
+
+    }
+
+    private class cerrarAsync extends AsyncTask<Void, Void, Void> {
+
+        String detalleActual = detalle.getText().toString();
+        String cantidadActual = cantidad.getText().toString();
+        String tipoActual = tipo.getText().toString();
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            //actualizamos y esperamos respuesta
+
+            ArrayList<String> acabado = new ArrayList<>();
+            acabado =  mOperacionesServidor.editarDetalleAlbaran(FormularioAlbaranesDetalle.this, valorCodigoAlbaran, valorLinea, detalleActual,
+                    cantidadActual, tipoActual);
+
+            while ( acabado.size()==0){}
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            //cierra el formulario
+            finish();
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import at.ums.luna.liebochlieferschein.R;
@@ -49,7 +50,6 @@ public class DetalleAlbaranFragment extends Fragment {
 
 
     private String codigoAlbaranObtenido;
-//    private OperacionesBaseDatos mOperacionesBaseDatos;
     private OperacionesServidor mOperacionesServidor;
     private Context esteContexto;
 
@@ -102,7 +102,6 @@ public class DetalleAlbaranFragment extends Fragment {
 
 
     private void cargaInicial() {
-//        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
         mOperacionesServidor = new OperacionesServidor();
 
 
@@ -144,15 +143,10 @@ public class DetalleAlbaranFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-//        valorUltimaLinea = mOperacionesBaseDatos.ultimaLineaAlbaran(codigoAlbaranObtenido);
-//        ultimaLinea.setText(String.valueOf(valorUltimaLinea));
         valorUltimaLinea = 0;
         obtenerUltimaLinea();
 
         new ListaDetalleAsync().execute();
-//        mDetalleAlbaranes = mOperacionesBaseDatos.verListaDetalleAlbaran(codigoAlbaranObtenido);
-//        adapter = new ListaAlbaranesDetalleAdapter(mDetalleAlbaranes);
-//        recycler.setAdapter(adapter);
 
     }
 
@@ -161,6 +155,7 @@ public class DetalleAlbaranFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             //obtenemos el listado de Clientes desde el servidor
+            mDetalleAlbaranes = new ArrayList<DetalleAlbaranes>();
             mDetalleAlbaranes = mOperacionesServidor.verListaDetalleAlbaran(esteContexto, codigoAlbaranObtenido);
 
             while ( mDetalleAlbaranes.size()==0){}
@@ -196,8 +191,6 @@ public class DetalleAlbaranFragment extends Fragment {
         int nuevaLinea = valorUltimaLinea+1;
         String nuevaLineaTexto = String.valueOf(nuevaLinea);
 
-//        mOperacionesBaseDatos = new OperacionesBaseDatos(esteContexto);
-//        mOperacionesBaseDatos.nuevoDetalleAlbaran(nuevaLinea,codigoAlbaranObtenido);
         mOperacionesServidor = new OperacionesServidor();
         mOperacionesServidor.nuevoDetalleAlbaran(esteContexto,valorUltimaLinea,codigoAlbaranObtenido);
 
